@@ -1,4 +1,4 @@
-name: React CI
+name: React CI Pipeline
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-test:
 
     runs-on: ubuntu-latest
 
@@ -22,8 +22,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: npm
+          node-version: 24
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm install
@@ -31,10 +31,10 @@ jobs:
       - name: Run unit tests
         run: npm run test:run
 
-      - name: Build application
+      - name: Build React application
         run: npm run build
 
-      - name: Upload build artifact
+      - name: Upload production artifact
         uses: actions/upload-artifact@v4
         with:
           name: react-build
