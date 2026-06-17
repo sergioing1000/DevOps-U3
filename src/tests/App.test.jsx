@@ -1,13 +1,7 @@
 import { render, screen } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
 import App from "../App";
 
-test("renders Home title", () => {
-  render(
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>,
-  );
-
+test("renders home page", () => {
+  render(<App />);
   expect(screen.getByText(/DevOps React Laboratory/i)).toBeInTheDocument();
 });
