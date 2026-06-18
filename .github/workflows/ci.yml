@@ -36,8 +36,8 @@ jobs:
       - name: Show current directory
         run: pwd
 
-      - name: Show environment
-        run: set
+      - name: Show Vitest version
+        run: npx vitest --version
 
       - name: Install dependencies
         run: npm install
