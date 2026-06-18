@@ -33,6 +33,12 @@ jobs:
       - name: Show npm version
         run: npm -v
 
+      - name: Show current directory
+        run: pwd
+
+      - name: Show environment
+        run: set
+
       - name: Install dependencies
         run: npm install
 

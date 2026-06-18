@@ -41,3 +41,5 @@ npm test
 ```bash
 npm run build
 ```
+
+Test Self-Hosted Runner
