@@ -50,12 +50,11 @@ jobs:
 
       - name: SonarQube Analysis
         shell: pwsh
+        env:
+          SONAR_LOGIN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          npx sonar-scanner `
-            -Dsonar.projectKey=DevOps-React-Lab `
-            -Dsonar.host.url="${{ secrets.SONAR_HOST_URL }}" `
-            -Dsonar.token="${{ secrets.SONAR_TOKEN }}" `
-            -Dsonar.qualitygate.wait=true
+          sonar-scanner `
+            "-Dsonar.login=$env:SONAR_LOGIN"
 
       - name: Upload production artifact
         uses: actions/upload-artifact@v4
