@@ -25,7 +25,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: 'npm'
+          cache: npm
 
       - name: Show Node version
         run: node -v
@@ -45,16 +45,18 @@ jobs:
       - name: Run unit tests with coverage
         run: npm run coverage
 
-      - name: Build React application
-        run: npm run build
-
       - name: SonarQube Analysis
         shell: pwsh
         env:
           SONAR_LOGIN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST: ${{ secrets.SONAR_HOST_URL }}
         run: |
           sonar-scanner `
-            "-Dsonar.login=$env:SONAR_LOGIN"
+            "-Dsonar.login=$env:SONAR_LOGIN" `
+            "-Dsonar.host.url=$env:SONAR_HOST"
+
+      - name: Build React application
+        run: npm run build
 
       - name: Upload production artifact
         uses: actions/upload-artifact@v4
