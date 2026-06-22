@@ -1,217 +1,192 @@
-# Laboratorio de DevOps - Integración Continua y Calidad de Software
+# DevOps React Lab
 
-#  DevOps
+## Fundamentos DevOps - Unidad 3
 
-## Integrantes
+### Integración Continua (CI), Calidad de Código y Observabilidad
 
-* Sergio Cruz
+---
+
+## Autor
+
+**Sergio Cruz**
+
+Universidad de La Sabana
 
 ---
 
 # Descripción
 
-Este laboratorio implementa un proceso completo de aseguramiento de calidad para una aplicación desarrollada con **Spring Boot**, integrando pruebas automatizadas, análisis de calidad de código y un pipeline de Integración Continua (CI).
+Este proyecto implementa una aplicación desarrollada con **React + Vite** y un flujo completo de **DevOps**, integrando herramientas de Integración Continua (CI), análisis estático de código, pruebas automatizadas y monitoreo de infraestructura.
 
-Durante el desarrollo se implementaron:
+El objetivo principal es automatizar el ciclo de construcción y validación del software desde cada cambio realizado en el repositorio hasta el monitoreo de la infraestructura donde se ejecuta.
 
-* Pruebas unitarias
-* Pruebas de integración
-* Uso de Mockito
-* Base de datos H2
-* Cobertura con JaCoCo
-* Análisis estático con SonarQube
-* Pipeline de GitHub Actions
+---
 
-El objetivo principal consiste en garantizar que cada cambio realizado al proyecto sea validado automáticamente antes de ser integrado al repositorio principal.
+# Objetivos
+
+* Automatizar el proceso de construcción mediante GitHub Actions.
+* Ejecutar pruebas unitarias automáticamente.
+* Medir la cobertura del código.
+* Integrar SonarQube para análisis de calidad.
+* Construir la aplicación automáticamente.
+* Generar artefactos de despliegue.
+* Configurar Jenkins como servidor de automatización.
+* Implementar monitoreo mediante Prometheus y Grafana.
+* Visualizar métricas de infraestructura y contenedores Docker.
 
 ---
 
 # Arquitectura
 
-```
-Cliente
-   │
-   ▼
-REST Controller
-   │
-   ▼
-Service
-   │
-   ▼
-Repository
-   │
-   ▼
-H2 Database
+```text
+                   GitHub Repository
+                          │
+                          │ Push / Pull Request
+                          ▼
+                 GitHub Actions (CI)
+                          │
+        ┌─────────────────┼─────────────────┐
+        │                 │                 │
+        ▼                 ▼                 ▼
+  npm install      Unit Tests        Code Coverage
+        │
+        ▼
+ SonarQube Analysis
+        │
+        ▼
+   React Build
+        │
+        ▼
+ Upload Artifact
+        │
+        ▼
+      Jenkins
+        │
+        ▼
+──────────────────────────────────────────────
+                Observabilidad
+──────────────────────────────────────────────
+
+Node Exporter ─┐
+               │
+cAdvisor ──────┼────► Prometheus ─────► Grafana
+               │
+Jenkins ───────┘
 ```
 
 ---
 
 # Tecnologías utilizadas
 
-| Tecnología      | Versión |
-| --------------- | ------- |
-| Java            | 25 LTS  |
-| Maven           | 3.9.x   |
-| Spring Boot     | 4.x     |
-| Spring Data JPA | ✔       |
-| H2 Database     | ✔       |
-| JUnit 5         | ✔       |
-| Mockito         | ✔       |
-| JaCoCo          | ✔       |
-| SonarQube       | ✔       |
-| GitHub Actions  | ✔       |
+| Herramienta    | Propósito                |
+| -------------- | ------------------------ |
+| React          | Frontend                 |
+| Vite           | Build Tool               |
+| Vitest         | Pruebas unitarias        |
+| GitHub Actions | Integración Continua     |
+| Jenkins        | Automatización           |
+| SonarQube      | Calidad del código       |
+| Docker         | Contenedores             |
+| Docker Compose | Orquestación             |
+| Prometheus     | Recolección de métricas  |
+| Grafana        | Visualización            |
+| Node Exporter  | Métricas del sistema     |
+| cAdvisor       | Métricas de contenedores |
 
 ---
 
 # Estructura del proyecto
 
-```
-src
- ├── main
- │    ├── java
- │    └── resources
- │
- └── test
-      ├── unit
-      ├── integration
-      └── mockito
-```
+```text
+DevOps-U3/
 
----
-
-# Tipos de pruebas implementadas
-
-## 1. Pruebas Unitarias
-
-Validan el comportamiento individual de los métodos del sistema.
-
-Se ejecutan mediante:
-
-```bash
-mvn test
-```
-
-Incluyen pruebas sobre:
-
-* Servicios
-* Validaciones
-* Reglas de negocio
-
----
-
-## 2. Pruebas con Mockito
-
-Se utilizan objetos simulados (Mocks) para aislar dependencias.
-
-Objetivos:
-
-* Verificar llamadas a repositorios
-* Simular respuestas
-* Validar lógica del Service
-
----
-
-## 3. Pruebas de Integración
-
-Comprueban la interacción entre:
-
-* Controller
-* Service
-* Repository
-* Base de datos H2
-
-Se utiliza una base de datos embebida para ejecutar pruebas sin afectar entornos reales.
-
----
-
-# Base de datos H2
-
-La aplicación utiliza H2 en memoria durante las pruebas.
-
-Consola:
-
-```
-http://localhost:8080/h2-console
-```
-
-Parámetros de conexión:
-
-```
-JDBC URL:
-jdbc:h2:mem:testdb
-
-User:
-sa
-
-Password:
-(password vacío)
+│
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+│
+├── src/
+│
+├── public/
+│
+├── coverage/
+│
+├── docker-compose.yml
+│
+├── prometheus/
+│   └── prometheus.yml
+│
+├── sonar-project.properties
+│
+├── package.json
+│
+├── vite.config.js
+│
+└── README.md
 ```
 
 ---
 
-# Ejecución del proyecto
+# Pipeline CI
 
-Compilar
+El pipeline ejecuta automáticamente las siguientes etapas:
 
-```bash
-mvn clean compile
-```
-
-Ejecutar
-
-```bash
-mvn spring-boot:run
-```
+1. Checkout del repositorio.
+2. Instalación de dependencias.
+3. Ejecución de pruebas unitarias.
+4. Generación de cobertura.
+5. Construcción de la aplicación.
+6. Análisis de calidad mediante SonarQube.
+7. Publicación del artefacto generado.
 
 ---
 
-# Ejecución de pruebas
+## GitHub Actions
 
-Todas las pruebas
+Workflow:
 
-```bash
-mvn clean test
+```text
+.github/workflows/ci.yml
 ```
 
-Pruebas de integración
+Etapas principales:
 
-```bash
-mvn verify
-```
+* Checkout repository
+* Setup Node
+* npm install
+* npm run coverage
+* npm run build
+* SonarQube Analysis
+* Upload Artifact
 
 ---
 
-# Cobertura con JaCoCo
+# Pruebas unitarias
 
-Generar reporte
+Framework utilizado:
+
+* Vitest
+* Testing Library
+
+Ejecución:
 
 ```bash
-mvn clean test jacoco:report
+npm run coverage
 ```
 
-El reporte queda disponible en:
+Resultados:
 
-```
-target/site/jacoco/index.html
-```
+* Ejecución automática desde GitHub Actions.
+* Reporte de cobertura generado.
+* Archivo lcov.info utilizado por SonarQube.
 
 ---
 
-# SonarQube
+# Calidad del código
 
-Para analizar la calidad del código:
+Se integró SonarQube para realizar análisis estático del proyecto.
 
-```bash
-mvn clean verify sonar:sonar
-```
-
-O mediante Sonar Scanner:
-
-```bash
-npx sonar-scanner
-```
-
-Se analizan:
+Se evaluaron:
 
 * Bugs
 * Vulnerabilidades
@@ -219,148 +194,237 @@ Se analizan:
 * Cobertura
 * Duplicación
 
----
+Archivo utilizado:
 
-# Integración Continua (GitHub Actions)
-
-El proyecto incluye un pipeline automático que se ejecuta en cada:
-
-* Push
-* Pull Request
-
-El pipeline realiza automáticamente:
-
-1. Checkout del proyecto
-2. Configuración de Java
-3. Compilación
-4. Ejecución de pruebas
-5. Generación de cobertura
-6. Análisis con SonarQube
-
-Si alguna prueba falla, el pipeline finaliza con error y el merge queda bloqueado.
-
----
-
-# Flujo DevOps implementado
-
+```text
+sonar-project.properties
 ```
+
+---
+
+# Jenkins
+
+Jenkins fue configurado como servidor de automatización para ejecutar pipelines de integración continua.
+
+Características:
+
+* Pipeline automatizado.
+* Ejecución de Builds.
+* Integración con Docker.
+* Exportación de métricas hacia Prometheus.
+
+---
+
+# Docker
+
+Servicios desplegados mediante Docker Compose.
+
+Servicios incluidos:
+
+* Jenkins
+* SonarQube
+* Prometheus
+* Grafana
+* Node Exporter
+* cAdvisor
+
+Inicio del entorno:
+
+```bash
+docker compose up -d
+```
+
+Visualización:
+
+```bash
+docker ps
+```
+
+---
+
+# Observabilidad
+
+## Prometheus
+
+Prometheus recopila métricas provenientes de:
+
+* Prometheus
+* Node Exporter
+* cAdvisor
+* Jenkins
+
+Consulta básica:
+
+```text
+up
+```
+
+---
+
+## Grafana
+
+Se configuró Grafana conectado a Prometheus.
+
+Dashboards implementados:
+
+* Node Exporter Full
+* cAdvisor Exporter
+* Prometheus 2.0 Overview
+
+Estos dashboards permiten visualizar:
+
+* CPU
+* Memoria
+* Disco
+* Red
+* Contenedores Docker
+* Estado del servidor
+* Estado de Prometheus
+
+---
+
+# Ejecución local
+
+Instalar dependencias
+
+```bash
+npm install
+```
+
+Ejecutar la aplicación
+
+```bash
+npm run dev
+```
+
+Ejecutar pruebas
+
+```bash
+npm run coverage
+```
+
+Construcción
+
+```bash
+npm run build
+```
+
+---
+
+# Flujo CI/CD
+
+```text
 Developer
-
-    │
-
-git push
-
-    │
-
-GitHub
-
-    │
-
+     │
+     ▼
+Git Push
+     │
+     ▼
+GitHub Repository
+     │
+     ▼
 GitHub Actions
-
-    │
-
-Compile
-
-    │
-
-Unit Tests
-
-    │
-
-Integration Tests
-
-    │
-
-JaCoCo
-
-    │
-
-SonarQube
-
-    │
-
-Resultado del Pipeline
-```
-
----
-
-# Calidad del software
-
-Durante este laboratorio se verificó:
-
-* Correcto funcionamiento de la lógica de negocio.
-* Integración entre capas.
-* Cobertura mediante pruebas automatizadas.
-* Calidad del código con SonarQube.
-* Automatización del proceso mediante CI.
-
----
-
-# Comandos útiles
-
-Compilar
-
-```bash
-mvn clean compile
-```
-
-Ejecutar
-
-```bash
-mvn spring-boot:run
-```
-
-Pruebas
-
-```bash
-mvn test
-```
-
-Verificación completa
-
-```bash
-mvn verify
-```
-
-Cobertura
-
-```bash
-mvn jacoco:report
-```
-
-Sonar
-
-```bash
-npx sonar-scanner
+     │
+     ├── npm install
+     ├── Unit Tests
+     ├── Coverage
+     ├── SonarQube Analysis
+     ├── Build
+     ▼
+Artifacts
+     │
+     ▼
+Jenkins
+     │
+     ▼
+Prometheus
+     │
+     ▼
+Grafana
 ```
 
 ---
 
 # Resultados obtenidos
 
-✔ Compilación exitosa
+Se logró implementar satisfactoriamente:
 
-✔ Pruebas unitarias exitosas
-
-✔ Pruebas de integración exitosas
-
-✔ Mockito funcionando correctamente
-
-✔ Cobertura generada mediante JaCoCo
-
-✔ Pipeline GitHub Actions ejecutándose correctamente
-
-✔ Integración con SonarQube
+* Integración Continua mediante GitHub Actions.
+* Automatización con Jenkins.
+* Pruebas unitarias automatizadas.
+* Reportes de cobertura.
+* Análisis estático mediante SonarQube.
+* Construcción automática del proyecto.
+* Publicación de artefactos.
+* Infraestructura basada en Docker.
+* Recolección de métricas con Prometheus.
+* Visualización mediante Grafana.
 
 ---
 
-# Autor
+# Conclusiones
 
-**Sergio Cruz**
+Este laboratorio permitió integrar múltiples herramientas del ecosistema DevOps dentro de un flujo automatizado de desarrollo.
 
-Fundamentos DevOps
+La automatización mediante GitHub Actions y Jenkins garantiza la validación continua del código fuente, mientras que SonarQube aporta control sobre la calidad del software. Finalmente, Prometheus y Grafana proporcionan una solución de observabilidad que permite monitorear en tiempo real tanto la infraestructura como los servicios desplegados.
 
-Universidad de La Sabana
+La integración de estas herramientas demuestra cómo las prácticas DevOps contribuyen a mejorar la calidad del software, reducir errores manuales y aumentar la visibilidad sobre el estado de las aplicaciones.
 
-2026
+---
+
+# Evidencias 
+
+Capturas de pantalla :
+
+* Repositorio GitHub.
+
+[Repositorio GitHub](./docs/images/GitHub%20Actions.jpg)
+![Logo de ejemplo](./docs/images/GitHub%20Actions.jpg)
+
+
+* Runner Self-Hosted en ejecución.
+
+[Self-Hosted Runner](./docs/images/Runner%20Self-Hosted.jpg)
+![Logo de ejemplo](./docs/images/Runner%20Self-Hosted.jpg)
+
+* Dashboard de SonarQube.
+
+[Dashboard SonarQube 1](./docs/images/sonarqube%201.jpg)
+![Logo de ejemplo](./docs/images/sonarqube%201.jpg)
+
+[Dashboard SonarQube 2](./docs/images/sonarqube%202.jpg)
+![Logo de ejemplo](./docs/images/sonarqube%202.jpg)
+
+* Jenkins.
+
+[Jenkins 1](./docs/images/Jenkins%201.jpg)
+![Logo de ejemplo](./docs/images/Jenkins%201.jpg)
+
+[Jenkins 2](./docs/images/Jenkins%202.jpg)
+![Logo de ejemplo](./docs/images/Jenkins%202.jpg)
+
+* Docker Desktop con los contenedores.
+
+[Docker Desktop](./docs/images/Docker%20Desktop.jpg)
+![Logo de ejemplo](./docs/images/Docker%20Desktop.jpg)
+
+* Prometheus mostrando la consulta `up`.
+
+[Prometheus](./docs/images/Prometheus.jpg)
+![Logo de ejemplo](./docs/images/Prometheus.jpg)
+
+* Dashboards de Grafana.
+
+[Dashboard de Grafana 1](./docs/images/Grafana%201.jpg)
+![Logo de ejemplo](./docs/images/Grafana%201.jpg)
+
+[Dashboard de Grafana 2](./docs/images/Grafana%202.jpg)
+![Logo de ejemplo](./docs/images/Grafana%202.jpg)
+
+[Dashboard de Grafana 3](./docs/images/Grafana%203.jpg)
+![Logo de ejemplo](./docs/images/Grafana%203.jpg)
+
+* Reporte de cobertura generado por Vitest.
+
+[Vitest](./docs/images/vitest.jpg)
+![Logo de ejemplo](./docs/images/vitest.jpg)
